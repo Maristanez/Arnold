@@ -1,4 +1,5 @@
 import { AICheckInResponse, BackboardMemory, OnboardingData, Program, Session } from "@/types";
+import Constants from "expo-constants";
 import { ServiceResult } from "@/services/types";
 
 const CLAUDE_MODEL = "claude-sonnet-4-5";
@@ -48,7 +49,8 @@ function sanitizeCheckIn(candidate: unknown): AICheckInResponse | null {
 }
 
 async function callClaude(system: string, prompt: string): Promise<ServiceResult<unknown>> {
-  const apiKey = process.env.EXPO_PUBLIC_CLAUDE_API_KEY;
+  const extra = Constants.expoConfig?.extra as { claudeApiKey?: string } | undefined;
+  const apiKey = extra?.claudeApiKey;
 
   if (!apiKey) {
     return { data: null, error: "Missing Claude API key" };
