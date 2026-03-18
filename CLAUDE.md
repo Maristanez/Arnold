@@ -4,27 +4,35 @@
 Arnold is a React Native (Expo) mobile fitness app with AI-generated personalized programming, macro tracking, and a persistent AI memory layer (Backboard.io). Solo founder project by Bryan Maristanez.
 
 ## Tech Stack
-- **Mobile**: React Native (Expo SDK 55)
+- **Mobile**: React Native 0.83 (Expo SDK 55)
 - **Language**: TypeScript (strict mode)
 - **Backend/DB**: Supabase (PostgreSQL + Auth)
+- **State Management**: Zustand
 - **AI Memory**: Backboard.io
 - **LLM**: Claude API (structured output for program generation + coaching)
 - **Nutrition**: Open Food Facts API
+- **Animations**: react-native-reanimated
 
 ## Architecture
 
 ### Directory Structure
 ```
 src/
-├── components/       # Reusable UI components
+├── components/       # Reusable UI components (Button, Card, Input, Typography, etc.)
 ├── screens/          # Screen containers + views (container-presenter pattern)
-├── navigation/       # React Navigation stacks
+├── navigation/       # React Navigation stacks (bottom tabs + native stacks)
 ├── services/         # API/Supabase/external interactions (never in components)
 ├── hooks/            # Custom React hooks for business logic
-├── store/            # Zustand or Context API stores
-├── types/            # TypeScript interfaces and types
-├── constants/        # Colors.ts, Typography.ts, Spacing.ts
+├── store/            # Zustand stores
+├── types/            # TypeScript interfaces and types (fully defined)
+├── constants/        # Colors.ts, Typography.ts, Spacing.ts (fully defined)
 └── utils/            # Helper functions
+
+supabase/
+└── migrations/       # SQL migrations with RLS (001-005 complete)
+
+docs/                 # ARCHITECTURE.md, UI_GUIDELINES.md
+roadmap/              # MVP roadmap, frontend/backend task breakdowns
 ```
 
 ### Patterns
@@ -41,9 +49,10 @@ src/
 - **Auth Guard**: On mount, check session. Redirect to `Dashboard` if profile is complete, `Onboarding` if not, or stay on `Landing`.
 - **Pre-fetching**: Initial data sync (user profile, latest workout state) happens in `useLandingLogic.ts`.
 
-### Background Tasks
+### Background Tasks (not yet implemented)
 - **AI Memory Sync**: Periodic background task via `expo-background-fetch` to process logs and sync to Backboard.io.
 - **Triggers**: Session completion or daily scheduled sync.
+- **Note**: `expo-background-fetch` must be installed when this feature is built.
 
 ## Design System (Dark Mode Only)
 
@@ -89,10 +98,13 @@ Premium, dark, luxury feel. Near-black backgrounds. Generous whitespace. Bold ty
 - Use `react-native-async-storage` for session persistence
 
 ## Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL`
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-- `EXPO_PUBLIC_BACKBOARD_API_KEY`
-- `EXPO_PUBLIC_CLAUDE_API_KEY`
+Loaded via `dotenv` in `app.config.ts` and exposed through `expo-constants`:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `CLAUDE_API_KEY`
+- `BACKBOARD_API_KEY`
+
+Access at runtime via `Constants.expoConfig?.extra?.supabaseUrl`, etc.
 
 ## MVP Scope (Do Not Exceed)
 1. Fitness identity onboarding (6 profile types)
@@ -111,6 +123,16 @@ Premium, dark, luxury feel. Near-black backgrounds. Generous whitespace. Bold ty
 - `/new-service <name>` — scaffold service module with `{ data, error }` pattern
 - `/supabase-migration <name>` — generate SQL migration with RLS
 - `/test-prompt <name>` — test LLM prompt and validate JSON output
+
+## Database Schema
+Supabase migrations are in `supabase/migrations/`. Tables:
+- **profiles** — user identity, fitness goals, experience, equipment, onboarding state. Auto-created on signup via trigger.
+- **programs** — AI-generated training programs with JSONB `days` column for day-by-day structure.
+- **sessions** — workout sessions linked to programs, JSONB `exercises` with AI feedback/assessment.
+- **meals** — daily meal entries with JSONB `foods` and `macros_total`.
+- **ai_memories** — Backboard.io memory sync records.
+
+All tables have RLS enabled with user-scoped policies. Uses `fitness_identity` enum (bodybuilder, powerlifter, athlete, crossfitter, casual, beginner).
 
 ## Commands
 ```bash

@@ -5,6 +5,13 @@ export interface Macros {
   fat: number;
 }
 
+export interface NullableMacros {
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fat: number | null;
+}
+
 export interface FoodEntry {
   id: string;
   name: string;
@@ -31,5 +38,5 @@ export interface FoodSearchResult {
   name: string;
   brand?: string;
   serving_size: string;
-  macros_per_serving: Macros;
+  macros_per_serving: NullableMacros;
 }
