@@ -24,10 +24,10 @@ Everything that does not render UI: types, database schema, services, state stor
 - [x] `src/` directory skeleton created
 - [x] `supabase/migrations/` directory created
 - [x] Core deps installed (`@react-navigation/*`, `zustand`, `react-native-reanimated`, `expo-constants`, `dotenv`, etc.)
-- [ ] Install `@anthropic-ai/sdk` — verify it works in React Native / Hermes before Phase 3 ⚠️
+- [~] Install `@anthropic-ai/sdk` — verify it works in React Native / Hermes before Phase 3 ⚠️
   - Test: `messages.create` with a simple prompt, no streaming
   - Fallback: proxy through a Supabase Edge Function if it fails
-- [ ] Move `dotenv` from `dependencies` to `devDependencies` in `package.json`
+- [x] Move `dotenv` from `dependencies` to `devDependencies` in `package.json`
 
 ---
 
@@ -43,7 +43,7 @@ Everything that does not render UI: types, database schema, services, state stor
 - [x] `src/types/index.ts`
 
 ### Remaining
-- [ ] `src/types/navigation.ts` — navigation param types consumed by both hooks and screens
+- [x] `src/types/navigation.ts` — navigation param types consumed by both hooks and screens
 
 ```ts
 // Required exports:
@@ -105,23 +105,23 @@ export type NutritionStackParamList = {
 - [!] Email/password auth enabled in Supabase dashboard
 
 ### Migrations
-- [ ] `supabase/migrations/001_create_fitness_identity_enum.sql`
+- [x] `supabase/migrations/001_create_fitness_identity_enum.sql`
   - `fitness_identity` enum: `bodybuilder`, `powerlifter`, `athlete`, `crossfitter`, `casual`, `beginner`
   - `update_updated_at_column()` trigger function
 
-- [ ] `supabase/migrations/002_create_profiles_table.sql`
+- [x] `supabase/migrations/002_create_profiles_table.sql`
   - `profiles` table linked to `auth.users` (same uuid PK)
   - Columns: `email`, `fitness_identity`, `current_goals` (text[]), `experience_level`, `years_training`, `injuries` (text[]), `days_per_week`, `session_duration`, `equipment` (text[]), `is_onboarded` (bool default false)
   - RLS: users can only read/update their own row
   - Trigger: auto-insert profile row on `auth.users` INSERT
 
-- [ ] `supabase/migrations/003_create_programs_and_sessions.sql`
+- [x] `supabase/migrations/003_create_programs_and_sessions.sql`
   - `programs` table: `user_id` (FK auth.users), `name`, `description`, `fitness_identity`, `days` (jsonb), `is_active` (bool), `week_number` (int)
   - `sessions` table: `user_id`, `program_id` (FK programs), `day_number`, `day_name`, `exercises` (jsonb), `started_at`, `completed_at`, `duration_seconds`, `ai_feedback`, `ai_assessment`
   - RLS on both: users own their rows
   - Index: `programs(user_id, is_active)`, `sessions(user_id, started_at DESC)`
 
-- [ ] `supabase/migrations/004_create_meals_table.sql`
+- [x] `supabase/migrations/004_create_meals_table.sql`
   - `meals` table: `user_id`, `meal_type` (text), `foods` (jsonb), `macros_total` (jsonb), `logged_at` (timestamptz)
   - RLS: users own their rows
   - Index: `meals(user_id, logged_at DESC)`
@@ -134,36 +134,36 @@ export type NutritionStackParamList = {
 
 > All services return `Promise<{ data: T | null; error: string | null }>`. Never throw to callers. Never import directly in components — only in hooks.
 
-- [ ] `src/services/supabase.ts`
+- [x] `src/services/supabase.ts`
   - Typed `createClient<Database>` using generated types
   - AsyncStorage session adapter: `storage: AsyncStorage`
   - Export single `supabase` client instance
 
-- [ ] `src/services/authService.ts`
+- [x] `src/services/authService.ts`
   - `signUp(email, password)` → `{ data: User, error }`
   - `signIn(email, password)` → `{ data: Session, error }`
   - `signOut()` → `{ data: null, error }`
   - `getSession()` → `{ data: Session | null, error }`
   - `onAuthStateChange(callback)` → unsubscribe function
 
-- [ ] `src/services/profileService.ts`
+- [x] `src/services/profileService.ts`
   - `getProfile(userId)` → `{ data: UserProfile, error }`
   - `updateProfile(userId, partial)` → `{ data: UserProfile, error }`
   - `completeOnboarding(userId, onboardingData)` → `{ data: UserProfile, error }`
 
-- [ ] `src/services/programService.ts`
+- [x] `src/services/programService.ts`
   - `getCurrentProgram(userId)` → `{ data: Program | null, error }`
   - `createProgram(userId, program)` → `{ data: Program, error }`
   - `getProgramHistory(userId)` → `{ data: Program[], error }`
 
-- [ ] `src/services/sessionService.ts`
+- [x] `src/services/sessionService.ts`
   - `startSession(userId, programId, dayNumber, dayName, exercises)` → `{ data: Session, error }`
   - `updateSessionExercise(sessionId, exercises)` → `{ data: Session, error }`
   - `completeSession(sessionId, durationSeconds)` → `{ data: Session, error }`
   - `updateSessionAIFeedback(sessionId, feedback, assessment)` → `{ data: Session, error }`
   - `getSessionHistory(userId, limit?)` → `{ data: Session[], error }`
 
-- [ ] `src/services/nutritionService.ts`
+- [x] `src/services/nutritionService.ts`
   - `logMeal(userId, mealType, foods)` → creates meal with calculated `macros_total` → `{ data: Meal, error }`
   - `addFoodToMeal(mealId, food)` → fetch meal, push food, recalculate `macros_total`, upsert → `{ data: Meal, error }`
   - `getTodayMeals(userId)` → `{ data: Meal[], error }` (filter by today's date range)
@@ -173,7 +173,7 @@ export type NutritionStackParamList = {
     - Map: `product_name`, `brands`, `serving_size`, `nutriments` → `FoodSearchResult`
     - Show "N/A" (null) for any missing nutriment values
 
-- [ ] `src/services/claudeService.ts` ⚠️ (verify SDK in RN first)
+- [~] `src/services/claudeService.ts` ⚠️ (verify SDK in RN first)
   - `generateProgram(onboardingData, memories)` → `{ data: Program, error }`
     - System prompt: fitness coach AI generating a structured weekly program
     - Use structured JSON output (tool_use or JSON mode)
@@ -182,7 +182,7 @@ export type NutritionStackParamList = {
     - System prompt: post-workout coach giving feedback
     - Parse into `AICheckInResponse`
 
-- [ ] `src/services/backboardService.ts` ⚠️ (API unverified — confirm before building)
+- [~] `src/services/backboardService.ts` ⚠️ (API unverified — confirm before building)
   - If Backboard.io API is confirmed: implement per their API docs
   - If not confirmed: implement a Supabase-based fallback:
     - Table `ai_memories`: `user_id`, `type`, `content`, `metadata` (jsonb), `created_at`
@@ -197,7 +197,7 @@ export type NutritionStackParamList = {
 
 > Stores hold UI-reactive state derived from service calls. Hooks read stores and call services.
 
-- [ ] `src/store/authStore.ts`
+- [x] `src/store/authStore.ts`
   ```ts
   interface AuthState {
     session: Session | null;
@@ -209,7 +209,7 @@ export type NutritionStackParamList = {
   }
   ```
 
-- [ ] `src/store/userStore.ts`
+- [x] `src/store/userStore.ts`
   ```ts
   interface UserState {
     profile: UserProfile | null;
@@ -220,7 +220,7 @@ export type NutritionStackParamList = {
   }
   ```
 
-- [ ] `src/store/programStore.ts`
+- [x] `src/store/programStore.ts`
   ```ts
   interface ProgramState {
     currentProgram: Program | null;
@@ -232,7 +232,7 @@ export type NutritionStackParamList = {
   }
   ```
 
-- [ ] `src/store/onboardingStore.ts` *(replaces navigation params anti-pattern)*
+- [x] `src/store/onboardingStore.ts` *(replaces navigation params anti-pattern)*
   ```ts
   interface OnboardingState {
     data: Partial<OnboardingData>;
@@ -241,7 +241,7 @@ export type NutritionStackParamList = {
   }
   ```
 
-- [ ] `src/store/index.ts` — barrel export
+- [x] `src/store/index.ts` — barrel export
 
 ---
 
@@ -249,22 +249,22 @@ export type NutritionStackParamList = {
 
 > Hooks are the only thing screens import. They orchestrate stores + services.
 
-- [ ] `src/hooks/useAuth.ts`
+- [x] `src/hooks/useAuth.ts`
   - On mount: call `authService.getSession()` → populate `authStore`
   - Subscribe to `authService.onAuthStateChange()` → keep store in sync
   - Expose: `signIn(email, password)`, `signUp(email, password)`, `signOut()`
   - All methods set `isLoading` before/after and surface errors
 
-- [ ] `src/hooks/useUser.ts`
+- [x] `src/hooks/useUser.ts`
   - On mount (when authenticated): call `profileService.getProfile(userId)`
   - Expose: `profile`, `isOnboarded`, `completeOnboarding(data)` → saves profile + sets `is_onboarded`
 
-- [ ] `src/hooks/useProgram.ts`
+- [x] `src/hooks/useProgram.ts`
   - On mount: call `programService.getCurrentProgram(userId)` → populate `programStore`
   - Expose: `currentProgram`, `isLoading`, `isGenerating`, `generateNewProgram(onboardingData)`
     - `generateNewProgram`: retrieve Backboard memories → call `claudeService.generateProgram` → save via `programService.createProgram`
 
-- [ ] `src/hooks/useWorkout.ts`
+- [x] `src/hooks/useWorkout.ts`
   - Manages active session state locally (not in a store — ephemeral)
   - `startWorkout(dayNumber)` → `sessionService.startSession` → start timer
   - `logSet(exerciseId, setNumber, weight, reps)` → update local state → `sessionService.updateSessionExercise`
@@ -275,7 +275,7 @@ export type NutritionStackParamList = {
     3. `sessionService.updateSessionAIFeedback()` — if fails: silent
     4. `backboardService.storeSessionMemory()` — if fails: silent
 
-- [ ] `src/hooks/useNutrition.ts`
+- [x] `src/hooks/useNutrition.ts`
   - On mount: `nutritionService.getTodayMeals()` + `getDailyMacros()`
   - `searchFood(query)` → debounced (300ms), calls `nutritionService.searchFood`
   - `logMeal(mealType, foods)` → `nutritionService.logMeal` → refresh today's meals

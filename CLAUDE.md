@@ -31,8 +31,10 @@ src/
 supabase/
 └── migrations/       # SQL migrations with RLS (001-005 complete)
 
-docs/                 # ARCHITECTURE.md, UI_GUIDELINES.md
-roadmap/              # MVP roadmap, frontend/backend task breakdowns
+docs/
+├── ARCHITECTURE.md
+├── UI_GUIDELINES.md
+└── roadmap/          # MVP roadmap, frontend/backend task breakdowns
 ```
 
 ### Patterns

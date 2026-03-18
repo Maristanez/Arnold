@@ -1,12 +1,4 @@
-import { NavigatorScreenParams } from "@react-navigation/native";
-import { MealType } from "./nutrition";
-
-export type RootStackParamList = {
-  Loading: undefined;
-  Auth: NavigatorScreenParams<AuthStackParamList>;
-  Onboarding: NavigatorScreenParams<OnboardingStackParamList>;
-  Main: NavigatorScreenParams<TabParamList>;
-};
+import type { MealType } from "./nutrition";
 
 export type AuthStackParamList = {
   Welcome: undefined;
@@ -23,26 +15,19 @@ export type OnboardingStackParamList = {
 };
 
 export type TabParamList = {
-  HomeTab: NavigatorScreenParams<HomeStackParamList>;
-  WorkoutTab: NavigatorScreenParams<WorkoutStackParamList>;
-  StartWorkout: undefined;
-  NutritionTab: NavigatorScreenParams<NutritionStackParamList>;
-  ProfileTab: undefined;
-};
-
-export type HomeStackParamList = {
   Home: undefined;
-  ProgramDetail: { programId: string };
+  Workout: undefined;
+  NutritionTab: undefined;
+  Profile: undefined;
 };
 
-export type WorkoutStackParamList = {
-  WorkoutHistory: undefined;
+export type RootStackParamList = {
+  Auth: undefined;
+  Onboarding: undefined;
+  Main: undefined;
   WorkoutActive: { dayNumber: number };
   WorkoutCheckIn: { sessionId: string };
-};
-
-export type NutritionStackParamList = {
-  NutritionDashboard: undefined;
+  ProgramDetail: undefined;
   FoodSearch: { mealType: MealType };
-  MealDetail: { mealId: string };
+  MealDetail: { mealId: string; mealType: MealType };
 };

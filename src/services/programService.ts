@@ -1,6 +1,6 @@
 import { supabase } from "@/services/supabase";
 import { ServiceResult } from "@/services/types";
-import { Program } from "@/types";
+import { Json, Program } from "@/types";
 
 export const programService = {
   async getCurrentProgram(userId: string): Promise<ServiceResult<Program | null>> {
@@ -38,7 +38,7 @@ export const programService = {
       name: program.name,
       description: program.description,
       fitness_identity: program.fitness_identity,
-      days: program.days,
+      days: program.days as unknown as Json,
       is_active: program.is_active,
       week_number: program.week_number,
     };
